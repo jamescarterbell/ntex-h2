@@ -666,6 +666,8 @@ impl StreamRef {
                         self.0
                             .send_window
                             .set(self.0.send_window.get().dec(size as u32));
+                        self.0.con.0.send_window
+                            .set(self.0.con.0.send_window.get().dec(size as u32));
                         // write to io buffer
                         self.0.con.encode(data);
                         if res.is_empty() {
@@ -700,7 +702,7 @@ impl StreamRef {
     }
 
     pub fn available_send_capacity(&self) -> WindowSize {
-        self.0.send_window.get().window_size()
+        cmp::min(self.0.con.0.send_window.get().window_size(), self.0.send_window.get().window_size())
     }
 
     pub async fn send_capacity(&self) -> Result<WindowSize, OperationError> {

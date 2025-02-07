@@ -14,7 +14,7 @@ use crate::stream::{Stream, StreamRef};
 use crate::{codec::Codec, consts, message::Message, window::Window};
 
 #[derive(Clone)]
-pub struct Connection(Rc<ConnectionState>);
+pub struct Connection(pub(crate) Rc<ConnectionState>);
 
 pub(crate) struct RecvHalfConnection(Rc<ConnectionState>);
 
@@ -31,10 +31,10 @@ bitflags::bitflags! {
     }
 }
 
-struct ConnectionState {
+pub(crate) struct ConnectionState {
     io: IoRef,
     codec: Codec,
-    send_window: Cell<Window>,
+    pub send_window: Cell<Window>,
     recv_window: Cell<Window>,
     next_stream_id: Cell<StreamId>,
     streams: RefCell<HashMap<StreamId, StreamRef>>,
